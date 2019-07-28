@@ -1,4 +1,6 @@
 ext {
+    // 组件化开发开关，true:集成模式，false:组件模式
+    isModule = true
     // ext 是扩展的是意思，后面的花括号代表闭包
     // android是这里定义的变量（字典map，这里理解为键值对即可）
     android = [

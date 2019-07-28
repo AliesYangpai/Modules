@@ -1,6 +1,12 @@
-apply plugin: 'com.android.library'
+// 根据包名来进行组件模式和集成模式切换
+if (rootProject.ext.isModule) {
+    apply plugin: 'com.android.library'
+} else {
+    apply plugin: 'com.android.application'
+}
+
 def configGlobalAndroid = rootProject.ext.android
-def configGlobalAppId = rootProject.ext.appId // library中不能设置appId 因此这一段可以删了
+def configGlobalAppId = rootProject.ext.appId // library中不能设置appId 因此这一段本可以删了(但是如果是组件模式的时候就需要这个了)
 def configGlobalDependencies = rootProject.ext.dependencies
 android {
     compileSdkVersion configGlobalAndroid.compileSdkVersion
@@ -11,9 +17,30 @@ android {
         targetSdkVersion configGlobalAndroid.targetSdkVersion
         versionCode configGlobalAndroid.versionCode
         versionName configGlobalAndroid.versionName
-
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+
+        //添加一条 boolean类型的变量 指定当前modlue是否是组件模式，当我们在java代码中需要使用BuildConfig进行
+        // 相关业务判断时，比如这个isModlue,组件模式下执行哪些代码，那么我们就可以设置这样，便于我们后面代码判断
+        buildConfigField("boolean","isModule",String.valueOf(isModule))
+
+
+        if (!rootProject.ext.isModule) {
+            applicationId configGlobalAppId["m1"]
+        }
+
+
+
+        sourceSets {
+            main {
+                if(!rootProject.ext.isModule){
+                    // 这是配置manifest文件,注意这个是变量是srcFile源码文件 因此，目录就要具体到文件了
+                    manifest.srcFile 'src/main/applicationtype/AndroidManifest.xml'
+                    // 源码文件打包 这就解释了，为什么gradle会把mudle中的java、res Mainfest分开管理
+                    java.srcDirs'src/main/applicationtype/java'
+                }
+            }
+        }
     }
 
     buildTypes {

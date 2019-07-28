@@ -1,0 +1,35 @@
+apply plugin: 'com.android.library'
+def configGlobalAndroid = rootProject.ext.android
+def configGlobalAppId = rootProject.ext.appId // library中不能设置appId 因此这一段可以删了
+def configGlobalDependencies = rootProject.ext.dependencies
+android {
+    compileSdkVersion configGlobalAndroid.compileSdkVersion
+
+
+    defaultConfig {
+        minSdkVersion configGlobalAndroid.minSdkVersion
+        targetSdkVersion configGlobalAndroid.targetSdkVersion
+        versionCode configGlobalAndroid.versionCode
+        versionName configGlobalAndroid.versionName
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation configGlobalDependencies["appcompat-v7"]
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+}
